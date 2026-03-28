@@ -1,6 +1,6 @@
 # ⚔️ SQL Dungeon: The Query Chronicles
 
-**SQL Dungeon** is a gamified web platform that transforms advanced T-SQL learning into an immersive RPG experience. Designed for CS majors, this project replaces traditional database drills with narrative-driven "SQLNOIR" mysteries, XP-based progression, and high-stakes "Guild Contracts."
+**SQL Dungeon** is a gamified web platform that transforms advanced T-SQL learning into an immersive RPG experience. Designed for CS majors, this project replaces traditional database drills with narrative-driven question style like SQLNOIR mysteries, XP-based progression, and high-stakes "Guild Contracts."
 
 ---
 
@@ -15,16 +15,16 @@ In this dungeon, your SQL queries are your weapons.
 
 ## 🗺️ The Quest Pipelines (Part 1: Individual Mysteries)
 
-The project features 20 multi-part "SQLNOIR" mysteries divided into two distinct campaigns. Each mystery follows a 4-step structure: gathering clues, joining datasets, applying advanced functions, and a final optimized master query.
+The project features 20 multi-part SQLNOIR style mysteries but dungeon and fantasy themed questions divided into two distinct campaigns. Each mystery follows a 4-step structure: gathering clues, joining datasets, applying advanced functions, and a final optimized master query.
 
 ### 🗡️ Azm Quests (10 Chapters)
 A specialized pipeline focusing on deep-dive data forensics.
-* **Focus:** Narrative-driven puzzles involving suspect identification and transaction anomalies.
+* **Focus:** Story-driven puzzles involving iteem identification and enventory organization.
 * **Technical Goal:** Mastery of **CTEs (Common Table Expressions)** and complex **Joins**.
 
 ### 🛡️ Kazi Quests (10 Chapters)
 A parallel campaign exploring diverse datasets and edge-case scenarios.
-* **Focus:** Pattern recognition and detecting "data crimes" within large-scale inventory and sales systems.
+* **Focus:** Pattern recognition within large-scale inventory and sales systems.
 * **Technical Goal:** Application of **Window Functions** (`RANK`, `LEAD/LAG`) and **Subqueries**.
 
 ---
@@ -34,7 +34,7 @@ A parallel campaign exploring diverse datasets and edge-case scenarios.
 The **Guild Contracts** are 10 high-level "Proposition Questions" that simulate real-world software development and consulting.
 
 * **Format:** Paired programming (Driver/Navigator roles).
-* **Objective:** Solve 10 real-life implementations, such as fraud detection algorithms, inventory forecasting, and customer churn analysis.
+* **Objective:** Complete 10 dungeon-themed operations, such as identifying Mimickers in the loot logs, forecasting health potion demand before a raid, and analyzing party survival rates.
 * **Deliverable:** A collaborative SQL Notebook documenting the business requirement, the technical solution, and the final insights.
 
 ---
