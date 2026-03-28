@@ -2,6 +2,19 @@
 
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
+import {
+  Lock,
+  LogOut,
+  ScrollText,
+  Shield,
+  Sparkles,
+  Star,
+  Swords,
+  Trophy,
+  Wand2,
+  Zap,
+  type LucideIcon,
+} from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils/cn'
 import { getQuestDisplayTitle, isQuestRevealed } from '@/lib/quests'
@@ -19,6 +32,56 @@ interface Props {
   nextSecretQuest: Quest | null
   onBuyTeleportScroll: () => Promise<boolean>
   onRevealNextSecretQuest: () => Promise<Quest | null>
+}
+
+function getCollapsedQuestMeta({
+  active,
+  locked,
+  completed,
+  hiddenSecret,
+}: {
+  active: boolean
+  locked: boolean
+  completed: boolean
+  hiddenSecret: boolean
+}): { Icon: LucideIcon; iconClassName: string; shellClassName: string } {
+  if (hiddenSecret) {
+    return {
+      Icon: Sparkles,
+      iconClassName: 'text-fuchsia-200',
+      shellClassName: 'border-fuchsia-500/30 bg-fuchsia-500/10',
+    }
+  }
+
+  if (locked) {
+    return {
+      Icon: Lock,
+      iconClassName: 'text-mist',
+      shellClassName: 'border-rune/10 bg-transparent',
+    }
+  }
+
+  if (active) {
+    return {
+      Icon: Swords,
+      iconClassName: 'text-rune',
+      shellClassName: 'border-rune/60 bg-rune/20 shadow-[0_0_18px_rgba(139,92,246,0.18)]',
+    }
+  }
+
+  if (completed) {
+    return {
+      Icon: Star,
+      iconClassName: 'fill-current text-gold',
+      shellClassName: 'border-gold/35 bg-gold/10',
+    }
+  }
+
+  return {
+    Icon: ScrollText,
+    iconClassName: 'text-parchment',
+    shellClassName: 'border-rune/25 bg-rune/5',
+  }
 }
 
 export default function DungeonSidebar({
@@ -74,11 +137,14 @@ export default function DungeonSidebar({
   }
 
   return (
-    <aside className="group/sidebar flex h-screen w-[5.25rem] min-w-[5.25rem] flex-col overflow-y-auto overflow-x-hidden border-r border-rune/15 bg-deep/95 transition-[width,min-width,background-color] duration-300 ease-out hover:w-[21rem] hover:min-w-[21rem] hover:bg-[#140f22]">
-      <div className="border-b border-rune/15 px-3 py-4 transition-all duration-300 group-hover/sidebar:px-5">
+    <aside className="group/sidebar flex h-screen w-[4.5rem] min-w-[4.5rem] flex-col overflow-y-auto overflow-x-hidden border-r border-rune/15 bg-deep/95 transition-[width,min-width,background-color] duration-300 ease-out hover:w-[21rem] hover:min-w-[21rem] hover:bg-[#140f22]">
+      <div className="border-b border-rune/15 px-2 py-4 transition-all duration-300 group-hover/sidebar:px-5">
         <div className="flex items-center justify-center group-hover/sidebar:justify-start">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-rune/30 bg-rune/10 font-cinzel text-sm font-black tracking-[0.16em] text-rune text-shadow-rune">
-            SD
+          <div
+            title="SQL:DUNGEON"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-rune/30 bg-rune/10 text-rune"
+          >
+            <Shield className="h-5 w-5" />
           </div>
           <div className="ml-0 max-w-0 overflow-hidden opacity-0 transition-all duration-200 group-hover/sidebar:ml-3 group-hover/sidebar:max-w-[14rem] group-hover/sidebar:opacity-100">
             <div className="whitespace-nowrap font-cinzel text-2xl font-black tracking-[0.14em] text-rune text-shadow-rune">
@@ -91,11 +157,13 @@ export default function DungeonSidebar({
         </div>
       </div>
 
-      <div className="border-b border-rune/10 px-3 py-4 transition-all duration-300 group-hover/sidebar:px-5">
+      <div className="border-b border-rune/10 px-2 py-4 transition-all duration-300 group-hover/sidebar:px-5">
         <div className="flex items-center justify-center group-hover/sidebar:hidden">
-          <div className="text-center">
-            <div className="font-cinzel text-[0.55rem] uppercase tracking-[0.2em] text-mist">XP</div>
-            <div className="mt-1 font-cinzel text-sm text-gold">{progress.xp}</div>
+          <div
+            title={`Experience: ${progress.xp} XP`}
+            className="flex h-11 w-11 items-center justify-center rounded-2xl border border-gold/20 bg-gold/8 text-gold"
+          >
+            <Zap className="h-5 w-5" />
           </div>
         </div>
 
@@ -121,11 +189,13 @@ export default function DungeonSidebar({
         </div>
       </div>
 
-      <div className="border-b border-rune/10 px-3 py-4 transition-all duration-300 group-hover/sidebar:px-5">
+      <div className="border-b border-rune/10 px-2 py-4 transition-all duration-300 group-hover/sidebar:px-5">
         <div className="flex items-center justify-center group-hover/sidebar:hidden">
-          <div className="flex h-11 w-11 flex-col items-center justify-center rounded-xl border border-fuchsia-500/25 bg-fuchsia-500/8">
-            <span className="font-cinzel text-[0.48rem] uppercase tracking-[0.18em] text-fuchsia-200">TP</span>
-            <span className="font-cinzel text-sm text-cyan-100">{teleportScrolls}</span>
+          <div
+            title={`Arcane Shop: ${teleportScrolls} teleport scroll${teleportScrolls === 1 ? '' : 's'}`}
+            className="flex h-11 w-11 items-center justify-center rounded-2xl border border-fuchsia-500/25 bg-fuchsia-500/8 text-fuchsia-200"
+          >
+            <Wand2 className="h-5 w-5" />
           </div>
         </div>
 
@@ -169,9 +239,9 @@ export default function DungeonSidebar({
         </div>
       </div>
 
-      <div className="border-b border-rune/10 px-3 py-2 text-center transition-all duration-300 group-hover/sidebar:px-5 group-hover/sidebar:text-left">
-        <span className="font-cinzel text-[0.62rem] tracking-[0.28em] uppercase text-rune-dim group-hover/sidebar:hidden">
-          Q
+      <div className="border-b border-rune/10 px-2 py-2 text-center transition-all duration-300 group-hover/sidebar:px-5 group-hover/sidebar:text-left">
+        <span className="text-rune-dim group-hover/sidebar:hidden">
+          <ScrollText className="mx-auto h-4 w-4" />
         </span>
         <span className="hidden font-cinzel text-[0.62rem] tracking-[0.28em] uppercase text-rune-dim group-hover/sidebar:inline">
           Quest Log
@@ -185,11 +255,20 @@ export default function DungeonSidebar({
           const revealed = isQuestRevealed(q, progress)
           const locked = !canAccess(i)
           const active = activeIdx === i
-          const hiddenSecret = q.secret && !revealed
+          const hiddenSecret = !!q.secret && !revealed
+          const displayTitle = getQuestDisplayTitle(q, progress)
+          const { Icon, iconClassName, shellClassName } = getCollapsedQuestMeta({
+            active,
+            locked,
+            completed,
+            hiddenSecret,
+          })
 
           return (
             <button
               key={q.id}
+              title={`${q.id}: ${displayTitle}`}
+              aria-label={`${q.id}: ${displayTitle}`}
               onClick={() => {
                 if (hiddenSecret) {
                   toast.error('Use a Teleport Scroll in the shop to reveal this quest.')
@@ -213,27 +292,24 @@ export default function DungeonSidebar({
               <div className="flex items-center justify-center group-hover/sidebar:hidden">
                 <div
                   className={cn(
-                    'flex h-10 w-10 items-center justify-center rounded-xl border font-cinzel text-[0.72rem] font-bold tracking-[0.14em] transition-all',
-                    active && 'border-rune/60 bg-rune/20 text-rune',
-                    !active && completed && 'border-gold/40 bg-gold/10 text-gold',
-                    !active && !completed && !locked && 'border-rune/25 bg-rune/5 text-parchment',
-                    locked && 'border-rune/10 text-mist',
+                    'flex h-10 w-10 items-center justify-center rounded-2xl border transition-all',
+                    shellClassName,
                   )}
                 >
-                  {String(i + 1).padStart(2, '0')}
+                  <Icon className={cn('h-4.5 w-4.5', iconClassName)} />
                 </div>
               </div>
 
               <div className="hidden group-hover/sidebar:block">
                 {completed && (
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-base text-gold">*</span>
+                  <Star className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 fill-current text-gold" />
                 )}
 
                 <div className="font-cinzel text-[0.62rem] tracking-[0.18em] uppercase text-mist transition-colors duration-200 group-hover/item:text-gold-dim">
                   {q.id} - {q.rank}
                 </div>
                 <div className="mt-0.5 font-cinzel text-[0.94rem] leading-snug text-parchment transition-colors duration-200 group-hover/item:text-white">
-                  {getQuestDisplayTitle(q, progress)}
+                  {displayTitle}
                 </div>
                 {hiddenSecret && (
                   <div className="mt-1 font-cinzel text-[0.56rem] tracking-[0.15em] uppercase text-fuchsia-300/80">
@@ -242,9 +318,13 @@ export default function DungeonSidebar({
                 )}
                 <div className="mt-1.5 flex gap-0.5">
                   {Array.from({ length: 5 }, (_, s) => (
-                    <span key={s} className={`text-[0.62rem] ${s < q.diff ? 'text-gold' : 'text-gold/20'}`}>
-                      *
-                    </span>
+                    <Star
+                      key={s}
+                      className={cn(
+                        'h-3 w-3',
+                        s < q.diff ? 'fill-current text-gold' : 'text-gold/20',
+                      )}
+                    />
                   ))}
                 </div>
               </div>
@@ -253,26 +333,38 @@ export default function DungeonSidebar({
         })}
       </nav>
 
-      <div className="flex flex-col gap-2 border-t border-rune/10 p-3 transition-all duration-300 group-hover/sidebar:p-4">
+      <div className="flex flex-col gap-2 border-t border-rune/10 p-2 transition-all duration-300 group-hover/sidebar:p-4">
         <button
+          title="Kazi and Azm Trials"
+          aria-label="Kazi and Azm Trials"
           onClick={() => window.location.href = '/guild'}
           className="w-full border border-rune/30 bg-rune/8 py-2.5 text-center font-cinzel text-[0.7rem] tracking-[0.18em] uppercase text-rune transition-all duration-200 hover:border-rune/60 hover:bg-rune/20 hover:text-white"
         >
-          <span className="group-hover/sidebar:hidden">GT</span>
+          <span className="group-hover/sidebar:hidden">
+            <Swords className="mx-auto h-4 w-4" />
+          </span>
           <span className="hidden group-hover/sidebar:inline">Kazi & Azm Trials</span>
         </button>
         <button
+          title="Guild Hall Leaderboard"
+          aria-label="Guild Hall Leaderboard"
           onClick={() => window.location.href = '/leaderboard'}
           className="w-full border border-gold/20 bg-gold/5 py-2.5 text-center font-cinzel text-[0.7rem] tracking-[0.18em] uppercase text-gold transition-all duration-200 hover:border-gold/45 hover:bg-gold/15 hover:text-yellow-100"
         >
-          <span className="group-hover/sidebar:hidden">LB</span>
+          <span className="group-hover/sidebar:hidden">
+            <Trophy className="mx-auto h-4 w-4" />
+          </span>
           <span className="hidden group-hover/sidebar:inline">Guild Hall Leaderboard</span>
         </button>
         <button
+          title="Leave the Dungeon"
+          aria-label="Leave the Dungeon"
           onClick={handleSignOut}
           className="w-full border border-rune/15 py-2.5 text-center font-cinzel text-[0.7rem] tracking-[0.18em] uppercase text-mist transition-all duration-200 hover:border-rune/35 hover:bg-rune/10 hover:text-parchment"
         >
-          <span className="group-hover/sidebar:hidden">OUT</span>
+          <span className="group-hover/sidebar:hidden">
+            <LogOut className="mx-auto h-4 w-4" />
+          </span>
           <span className="hidden group-hover/sidebar:inline">Leave the Dungeon</span>
         </button>
       </div>
