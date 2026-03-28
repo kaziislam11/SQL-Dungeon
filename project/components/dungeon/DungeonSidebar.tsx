@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import {
   ChevronRight,
+  Download,
   Lock,
   LogOut,
   ScrollText,
@@ -115,6 +116,8 @@ export default function DungeonSidebar({
   const router = useRouter()
   const teleportScrolls = progress.teleportScrolls ?? 0
   const activeQuest = quests[activeIdx]
+  const [showHeaderActions, setShowHeaderActions] = useState(false)
+  const [downloadingMasterNotebook, setDownloadingMasterNotebook] = useState(false)
   const [expandedGroups, setExpandedGroups] = useState<Record<QuestLine, boolean>>({
     'Kazi Quests': true,
     'Azm Quests': false,
@@ -195,25 +198,86 @@ export default function DungeonSidebar({
     }
   }
 
+  async function handleDownloadMasterNotebook() {
+    setDownloadingMasterNotebook(true)
+
+    try {
+      const res = await fetch('/api/export', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ format: 'master-ipynb' }),
+      })
+
+      if (!res.ok) {
+        throw new Error('Export failed')
+      }
+
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const anchor = document.createElement('a')
+      anchor.href = url
+      anchor.download = 'SQL_DUNGEON_master_notebook.ipynb'
+      anchor.click()
+      URL.revokeObjectURL(url)
+      toast.success('Master notebook downloaded.')
+    } catch {
+      toast.error('Could not build the master notebook.')
+    } finally {
+      setDownloadingMasterNotebook(false)
+    }
+  }
+
   return (
     <aside className="group/sidebar flex h-screen w-[4.5rem] min-w-[4.5rem] flex-col overflow-y-auto overflow-x-hidden border-r border-rune/15 bg-deep/95 transition-[width,min-width,background-color] duration-300 ease-out hover:w-[21rem] hover:min-w-[21rem] hover:bg-[#140f22]">
       <div className="border-b border-rune/15 px-2 py-4 transition-all duration-300 group-hover/sidebar:px-5">
-        <div className="flex items-center justify-center group-hover/sidebar:justify-start">
-          <div
-            title="SQL:DUNGEON"
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-sm border border-rune/30 bg-rune/10 text-rune"
-          >
-            <Shield className="h-5 w-5" />
-          </div>
-          <div className="ml-0 max-w-0 overflow-hidden opacity-0 transition-all duration-200 group-hover/sidebar:ml-3 group-hover/sidebar:max-w-[14rem] group-hover/sidebar:opacity-100">
-            <div className="whitespace-nowrap font-cinzel text-2xl font-black tracking-[0.14em] text-rune text-shadow-rune">
-              SQL:DUNGEON
+        <button
+          type="button"
+          onClick={() => setShowHeaderActions(value => !value)}
+          className="w-full text-left"
+          title="SQL:DUNGEON"
+          aria-label="SQL:DUNGEON"
+        >
+          <div className="flex items-center justify-center transition-all duration-200 group-hover/sidebar:justify-start">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-sm border border-rune/30 bg-rune/10 text-rune transition-all duration-200 hover:border-rune/60 hover:bg-rune/18 hover:text-white">
+              <Shield className="h-5 w-5" />
             </div>
-            <div className="mt-1 whitespace-nowrap font-cinzel text-[0.68rem] tracking-[0.18em] uppercase text-mist">
-              CSCI 331 - PPG_2
+            <div className="ml-0 max-w-0 overflow-hidden opacity-0 transition-all duration-200 group-hover/sidebar:ml-3 group-hover/sidebar:max-w-[14rem] group-hover/sidebar:opacity-100">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <div className="whitespace-nowrap font-cinzel text-2xl font-black tracking-[0.14em] text-rune text-shadow-rune">
+                    SQL:DUNGEON
+                  </div>
+                  <div className="mt-1 whitespace-nowrap font-cinzel text-[0.68rem] tracking-[0.18em] uppercase text-mist">
+                    CSCI 331 - PPG_2
+                  </div>
+                </div>
+                <ChevronRight
+                  className={cn(
+                    'h-4 w-4 shrink-0 text-rune-dim transition-transform duration-200',
+                    showHeaderActions && 'rotate-90 text-rune',
+                  )}
+                />
+              </div>
             </div>
           </div>
-        </div>
+        </button>
+
+        {showHeaderActions && (
+          <div className="mt-4 hidden group-hover/sidebar:block">
+            <button
+              type="button"
+              onClick={handleDownloadMasterNotebook}
+              disabled={downloadingMasterNotebook}
+              className="flex w-full items-center justify-between border border-rune/25 bg-rune/8 px-3 py-3 font-cinzel text-[0.68rem] uppercase tracking-[0.16em] text-rune transition-all duration-200 hover:border-rune/55 hover:bg-rune/18 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <span>Master Notebook .ipynb</span>
+              <Download className="h-4 w-4" />
+            </button>
+            <p className="mt-2 text-[0.8rem] leading-relaxed text-mist">
+              Downloads one notebook with all 10 Kazi quests, 10 Azm quests, and 10 Dungeon Contracts.
+            </p>
+          </div>
+        )}
       </div>
 
       <div className="border-b border-rune/10 px-2 py-4 transition-all duration-300 group-hover/sidebar:px-5">
