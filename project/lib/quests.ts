@@ -1,4 +1,4 @@
-import type { Quest, UserProgress } from '@/types'
+import type { Floor, Hint, Quest, UserProgress } from '@/types'
 import { QUESTS as DATA_QUESTS } from '@/lib/data/quests'
 
 export const TELEPORT_SCROLL_COST = 120
@@ -7,23 +7,125 @@ function normalizeQuestId(id: string) {
   return id.toUpperCase()
 }
 
-function makeHintsFree(quest: Quest): Quest {
+function getFloorObjectiveHint(floorIndex: number) {
+  switch (floorIndex) {
+    case 0:
+      return 'Start small and isolate the strange records this floor is pointing at before you try to solve the whole case.'
+    case 1:
+      return 'Now connect the suspicious records to the people, places, or items behind them so the pattern starts to make sense.'
+    case 2:
+      return 'This floor is about proof. Measure the pattern, gap, ranking, or chain that shows one result is different from the rest.'
+    default:
+      return 'Bring the earlier clues together and narrow everything down to one final answer that matches the verdict prompt.'
+  }
+}
+
+function getDifficultyHint(diff: number) {
+  switch (diff) {
+    case 1:
+      return 'This is a light quest, so once you narrow the evidence the answer should show up quickly.'
+    case 2:
+      return 'This quest is fairly direct. One clean comparison should make the answer stand out.'
+    case 3:
+      return 'This quest takes a couple of stages. Build one useful summary first, then inspect the outlier.'
+    case 4:
+      return 'This is a hard quest. Work in layers: isolate the evidence, summarize it, then compare the summaries.'
+    default:
+      return 'This is one of the hardest quests. Expect to trace a deeper chain, ranking, or lineage before the answer becomes obvious.'
+  }
+}
+
+function getTagDrivenHint(tags: string[]) {
+  const normalizedTags = tags.map(tag => tag.toLowerCase())
+
+  if (normalizedTags.some(tag => tag.includes('recursive'))) {
+    return 'Follow the trail step by step and keep track of how each record leads to the next one.'
+  }
+
+  if (normalizedTags.some(tag => tag.includes('window') || tag.includes('rank'))) {
+    return 'Compare records against nearby records or rank them so the strongest outlier becomes easy to spot.'
+  }
+
+  if (normalizedTags.some(tag => tag.includes('pivot'))) {
+    return 'Reshape the evidence so repeated categories can be compared side by side instead of one row at a time.'
+  }
+
+  if (normalizedTags.some(tag => tag.includes('self-join'))) {
+    return 'Compare records within the same set to find mirrored, repeated, or circular behavior.'
+  }
+
+  if (normalizedTags.some(tag => tag.includes('join'))) {
+    return 'Line related records up across the tables so names, places, and events are talking about the same thing.'
+  }
+
+  if (normalizedTags.some(tag => tag.includes('sum') || tag.includes('count') || tag.includes('group'))) {
+    return 'Summarize counts or totals before judging the result. The answer should come from the summary, not the raw rows alone.'
+  }
+
+  return 'Look for the one record that breaks the normal pattern after you organize the evidence clearly.'
+}
+
+function getContinuationHint(floorIndex: number, answerHint: string) {
+  if (floorIndex === 3) {
+    return `When you are ready to answer, return exactly what the verdict box asks for: ${answerHint.replace(/\.$/, '')}.`
+  }
+
+  return 'Do not guess yet. Use what you learn on this floor to make the next floor easier to prove.'
+}
+
+function buildNarrativeHints(
+  quest: Quest,
+  floor: Floor,
+  floorIndex: number,
+  nextHintId: () => number
+): Hint[] {
+  const desiredCount = Math.max(1, quest.diff)
+  const preservedIds = floor.hints.map(hint => hint.id)
+  const texts = [
+    getFloorObjectiveHint(floorIndex),
+    getDifficultyHint(quest.diff),
+    getTagDrivenHint(quest.tags),
+    'Stay focused on the smallest set of suspicious records you can explain clearly before widening the search.',
+    getContinuationHint(floorIndex, quest.answerHint),
+  ].slice(0, desiredCount)
+
+  return texts.map((text, index) => ({
+    id: preservedIds[index] ?? nextHintId(),
+    cost: 0,
+    text,
+  }))
+}
+
+function buildInlineHint(quest: Quest, floorIndex: number) {
+  if (floorIndex === 3) {
+    return `Use the evidence from the earlier floors to produce one final result for this ${quest.rank.toLowerCase()} quest.`
+  }
+
+  if (quest.diff >= 4) {
+    return 'Work step by step and prove the pattern before you move on to the next layer of the mystery.'
+  }
+
+  return 'Start with the suspicious records, then connect them to the names, places, or items that matter.'
+}
+
+function normalizeQuest(quest: Quest): Quest {
+  let nextGeneratedHintId =
+    Math.max(0, ...quest.floors.flatMap(floor => floor.hints.map(hint => hint.id))) + 1
+
   return {
     ...quest,
     id: normalizeQuestId(quest.id),
-    floors: quest.floors.map(floor => ({
+    floors: quest.floors.map((floor, floorIndex) => ({
       ...floor,
-      hints: floor.hints.map(hint => ({
-        ...hint,
-        cost: 0,
-      })),
+      hint: buildInlineHint(quest, floorIndex),
+      hints: buildNarrativeHints(quest, floor, floorIndex, () => nextGeneratedHintId++),
     })),
   }
 }
 
-export const CORE_SQLNOIR_QUESTS: Quest[] = DATA_QUESTS.map(makeHintsFree)
+export const CORE_SQLNOIR_QUESTS: Quest[] = DATA_QUESTS.map(normalizeQuest)
 
-export const SECRET_QUESTS: Quest[] = [
+const RAW_SECRET_QUESTS: Quest[] = [
   {
     id: 'SQ001',
     title: "The Null King's Labyrinth",
@@ -455,6 +557,8 @@ LIMIT 1;`,
     ],
   },
 ]
+
+export const SECRET_QUESTS: Quest[] = RAW_SECRET_QUESTS.map(normalizeQuest)
 
 export const QUESTS: Quest[] = [...CORE_SQLNOIR_QUESTS, ...SECRET_QUESTS]
 

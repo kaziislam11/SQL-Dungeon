@@ -323,9 +323,11 @@ export default function QuestView({
         </div>
 
         <div className="space-y-2">
-          <p className="font-cinzel text-[0.6rem] uppercase tracking-[0.2em] text-mist">Free Hints</p>
+          <p className="font-cinzel text-[0.6rem] uppercase tracking-[0.2em] text-mist">
+            Free Hints • {floor.hints.length} for this difficulty
+          </p>
           <div className="flex flex-wrap gap-2">
-            {floor.hints.map(hint => {
+            {floor.hints.map((hint, index) => {
               const unlocked = unlockedHints.has(hint.id)
 
               return (
@@ -339,7 +341,7 @@ export default function QuestView({
                       : 'border-rune/20 bg-rune/5 text-rune-dim hover:border-rune hover:text-rune',
                   )}
                 >
-                  {unlocked ? `* ${hint.text}` : 'Reveal Hint'}
+                  {unlocked ? `Hint ${index + 1}: ${hint.text}` : `Reveal Hint ${index + 1}`}
                 </button>
               )
             })}
@@ -398,7 +400,7 @@ export default function QuestView({
             <SQLEditor
               value={query}
               onChange={setQuery}
-              placeholder={`-- ${floor.hint}\n-- Ctrl+Enter to run`}
+              placeholder={`${floor.hint}\nPress Ctrl+Enter to run`}
               onRun={runQuery}
             />
           </div>
