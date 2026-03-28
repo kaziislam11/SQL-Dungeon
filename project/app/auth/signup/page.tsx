@@ -12,12 +12,12 @@ export default function SignupPage() {
   const [username, setUsername] = useState('')
   const [loading,  setLoading]  = useState(false)
   const router   = useRouter()
-  const supabase = createClient()
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault()
     if (password.length < 8) { toast.error('Password must be at least 8 characters.'); return }
     setLoading(true)
+    const supabase = createClient()
 
     const { error } = await supabase.auth.signUp({
       email,

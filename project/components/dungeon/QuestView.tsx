@@ -135,7 +135,7 @@ export default function QuestView({
 
       if (activeFloor < quest.floors.length - 1 && !isFloorCleared) {
         onClearFloor(quest.id, activeFloor).then(() => {
-          toast.success(`Floor ${['I', 'II', 'III', 'IV'][activeFloor]} cleared.`)
+          toast.success(`Part ${activeFloor + 1} cleared.`)
         })
       }
     } catch (err: any) {
@@ -280,7 +280,7 @@ export default function QuestView({
                 cleared && !active && 'text-gold-dim',
               )}
             >
-              Floor {['I', 'II', 'III', 'IV'][i]}
+              Part {i + 1}
               {cleared ? ' *' : ''}
             </button>
           )

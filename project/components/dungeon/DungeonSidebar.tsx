@@ -98,10 +98,10 @@ export default function DungeonSidebar({
   onRevealNextSecretQuest,
 }: Props) {
   const router = useRouter()
-  const supabase = createClient()
   const teleportScrolls = progress.teleportScrolls ?? 0
 
   async function handleSignOut() {
+    const supabase = createClient()
     await supabase.auth.signOut()
     toast.success('Farewell, Adventurer.')
     router.push('/')

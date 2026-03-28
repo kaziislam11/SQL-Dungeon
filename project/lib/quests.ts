@@ -7,31 +7,41 @@ function normalizeQuestId(id: string) {
   return id.toUpperCase()
 }
 
+function normalizePartTitle(title: string, floorIndex: number) {
+  const normalizedNumber = floorIndex + 1
+
+  return title
+    .replace(/^Floor\s+I\b/i, `Part ${normalizedNumber}`)
+    .replace(/^Floor\s+II\b/i, `Part ${normalizedNumber}`)
+    .replace(/^Floor\s+III\b/i, `Part ${normalizedNumber}`)
+    .replace(/^Floor\s+IV\b/i, `Part ${normalizedNumber}`)
+}
+
 function getFloorObjectiveHint(floorIndex: number) {
   switch (floorIndex) {
     case 0:
-      return 'Start small and isolate the strange records this floor is pointing at before you try to solve the whole case.'
+      return 'Start small. Look for the records that feel out of place before you try to solve the whole mystery at once.'
     case 1:
-      return 'Now connect the suspicious records to the people, places, or items behind them so the pattern starts to make sense.'
+      return 'Now connect those suspicious records to the people, places, or items behind them so the story starts to make sense.'
     case 2:
-      return 'This floor is about proof. Measure the pattern, gap, ranking, or chain that shows one result is different from the rest.'
+      return 'This floor is about proof. Compare the strongest suspect against the rest and look for the gap that makes them stand out.'
     default:
-      return 'Bring the earlier clues together and narrow everything down to one final answer that matches the verdict prompt.'
+      return 'Bring the earlier clues together and narrow them down until only one answer still fits everything you found.'
   }
 }
 
 function getDifficultyHint(diff: number) {
   switch (diff) {
     case 1:
-      return 'This is a light quest, so once you narrow the evidence the answer should show up quickly.'
+      return 'This is one of the easier quests, so once you focus on the right records the answer should show itself pretty quickly.'
     case 2:
-      return 'This quest is fairly direct. One clean comparison should make the answer stand out.'
+      return 'This quest is still pretty direct. One good comparison should make the right answer stand out.'
     case 3:
-      return 'This quest takes a couple of stages. Build one useful summary first, then inspect the outlier.'
+      return 'This quest has a few layers. First figure out the big picture, then look closely at the result that feels off.'
     case 4:
-      return 'This is a hard quest. Work in layers: isolate the evidence, summarize it, then compare the summaries.'
+      return 'This is a hard quest. Work in layers and make sure each step gives you a clearer clue before you move on.'
     default:
-      return 'This is one of the hardest quests. Expect to trace a deeper chain, ranking, or lineage before the answer becomes obvious.'
+      return 'This is one of the hardest quests. Be patient and follow the trail carefully, because the answer only becomes clear near the end.'
   }
 }
 
@@ -39,38 +49,38 @@ function getTagDrivenHint(tags: string[]) {
   const normalizedTags = tags.map(tag => tag.toLowerCase())
 
   if (normalizedTags.some(tag => tag.includes('recursive'))) {
-    return 'Follow the trail step by step and keep track of how each record leads to the next one.'
+    return 'This mystery has a trail that keeps extending forward. Follow where each clue leads next instead of treating every row like it stands alone.'
   }
 
   if (normalizedTags.some(tag => tag.includes('window') || tag.includes('rank'))) {
-    return 'Compare records against nearby records or rank them so the strongest outlier becomes easy to spot.'
+    return 'You are looking for the result that rises above the others, so pay attention to who ends up at the top or far away from the crowd.'
   }
 
   if (normalizedTags.some(tag => tag.includes('pivot'))) {
-    return 'Reshape the evidence so repeated categories can be compared side by side instead of one row at a time.'
+    return 'The evidence will be easier to read if you line repeated categories up next to each other instead of checking them one by one.'
   }
 
   if (normalizedTags.some(tag => tag.includes('self-join'))) {
-    return 'Compare records within the same set to find mirrored, repeated, or circular behavior.'
+    return 'Some of the clues point back at each other. Look for mirrored or circular behavior inside the same set of records.'
   }
 
   if (normalizedTags.some(tag => tag.includes('join'))) {
-    return 'Line related records up across the tables so names, places, and events are talking about the same thing.'
+    return 'Make sure the names, places, and events are lined up correctly so you are talking about the same trail of evidence the whole time.'
   }
 
   if (normalizedTags.some(tag => tag.includes('sum') || tag.includes('count') || tag.includes('group'))) {
-    return 'Summarize counts or totals before judging the result. The answer should come from the summary, not the raw rows alone.'
+    return 'Do not judge the mystery from raw rows alone. Step back, total things up, and see which result looks wrong once the noise is gone.'
   }
 
-  return 'Look for the one record that breaks the normal pattern after you organize the evidence clearly.'
+  return 'Look for the one result that breaks the normal pattern after you organize the evidence clearly.'
 }
 
 function getContinuationHint(floorIndex: number, answerHint: string) {
   if (floorIndex === 3) {
-    return `When you are ready to answer, return exactly what the verdict box asks for: ${answerHint.replace(/\.$/, '')}.`
+    return `When you are ready to answer, make sure your final response matches what the verdict box is asking for: ${answerHint.replace(/\.$/, '')}.`
   }
 
-  return 'Do not guess yet. Use what you learn on this floor to make the next floor easier to prove.'
+  return 'Do not guess yet. Use what you learn here to make the next floor feel more obvious.'
 }
 
 function buildNarrativeHints(
@@ -85,7 +95,7 @@ function buildNarrativeHints(
     getFloorObjectiveHint(floorIndex),
     getDifficultyHint(quest.diff),
     getTagDrivenHint(quest.tags),
-    'Stay focused on the smallest set of suspicious records you can explain clearly before widening the search.',
+    'If the screen feels noisy, narrow your focus to the smallest suspicious group you can explain clearly before widening the search.',
     getContinuationHint(floorIndex, quest.answerHint),
   ].slice(0, desiredCount)
 
@@ -98,14 +108,14 @@ function buildNarrativeHints(
 
 function buildInlineHint(quest: Quest, floorIndex: number) {
   if (floorIndex === 3) {
-    return `Use the evidence from the earlier floors to produce one final result for this ${quest.rank.toLowerCase()} quest.`
+    return `Use everything you learned in the earlier parts to prove one final answer for this ${quest.rank.toLowerCase()} quest.`
   }
 
   if (quest.diff >= 4) {
-    return 'Work step by step and prove the pattern before you move on to the next layer of the mystery.'
+    return 'Take this one slowly. Prove each clue before you move on to the next layer of the mystery.'
   }
 
-  return 'Start with the suspicious records, then connect them to the names, places, or items that matter.'
+  return 'Start with whatever looks suspicious, then connect it to the names, places, or items that matter.'
 }
 
 function normalizeQuest(quest: Quest): Quest {
@@ -117,6 +127,7 @@ function normalizeQuest(quest: Quest): Quest {
     id: normalizeQuestId(quest.id),
     floors: quest.floors.map((floor, floorIndex) => ({
       ...floor,
+      title: normalizePartTitle(floor.title, floorIndex),
       hint: buildInlineHint(quest, floorIndex),
       hints: buildNarrativeHints(quest, floor, floorIndex, () => nextGeneratedHintId++),
     })),
@@ -135,7 +146,7 @@ const RAW_SECRET_QUESTS: Quest[] = [
     rankClass: 'border-violet-500/50 bg-violet-500/10 text-violet-300',
     diff: 5,
     tags: ['Recursive CTE', 'Window Functions', 'Graph Search', 'Anti-Join', 'CASE WHEN'],
-    lore: `Beyond the mapped floors of the dungeon lies a folded hallway that only appears when reality tears sideways. Guild runners entered with full packs and came back with blank eyes, repeating one title: the Null King. Spend a teleport scroll to reveal the path, then trace the impossible route through unstable portals to name the sovereign waiting in the void.`,
+    lore: `Beyond the mapped corridors of the dungeon lies a folded hallway that only appears when reality tears sideways. Guild runners entered with full packs and came back with blank eyes, repeating one title: the Null King. Spend a teleport scroll to reveal the path, then trace the impossible route through unstable portals to name the sovereign waiting in the void.`,
     answer: 'null_king',
     answerHint: 'Enter the void sovereign in lowercase with underscore.',
     xp: 450,

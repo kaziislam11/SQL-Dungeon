@@ -1,0 +1,11 @@
+{
+  "name": "sql-dungeon-root",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix project run dev",
+    "build": "npm --prefix project run build",
+    "vercel-build": "npm --prefix project run build",
+    "lint": "npm --prefix project run lint",
+    "start": "npm --prefix project run start"
+  }
+}

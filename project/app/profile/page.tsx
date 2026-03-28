@@ -96,7 +96,7 @@ export default async function ProfilePage() {
                   </div>
                 </div>
 
-                {/* Floor pips */}
+                {/* Part pips */}
                 <div className="flex items-center gap-2">
                   {quest.floors.map((f, i) => {
                     const floorDone = completed || (qp?.floorsCleared ?? []).includes(i)
@@ -104,7 +104,7 @@ export default async function ProfilePage() {
                       <div key={i} className="flex-1">
                         <div className={`h-1 rounded-full transition-colors ${floorDone ? 'bg-rune' : 'bg-rune/10'}`} />
                         <div className={`mt-1 font-cinzel text-[0.5rem] tracking-widest text-center ${floorDone ? 'text-rune-dim' : 'text-mist/30'}`}>
-                          {['I','II','III','IV'][i]}
+                          {i + 1}
                         </div>
                       </div>
                     )
@@ -118,7 +118,7 @@ export default async function ProfilePage() {
                 )}
                 {!completed && cleared > 0 && (
                   <p className="mt-3 font-cinzel text-[0.6rem] tracking-[0.15em] uppercase text-mist">
-                    {cleared}/4 floors cleared
+                    {cleared}/4 parts cleared
                   </p>
                 )}
                 {!completed && cleared === 0 && (
