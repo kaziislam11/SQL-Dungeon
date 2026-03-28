@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar       { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: #06040a; }
+::-webkit-scrollbar-thumb { background: #5b3fa6; border-radius: 2px; }
+
+/* ── Grain overlay ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ── CodeMirror dungeon theme overrides ── */
+.cm-editor {
+  background: transparent !important;
+  font-size: 0.8rem;
+}
+.cm-editor.cm-focused { outline: none !important; }
+.cm-scroller { font-family: var(--font-mono, 'Share Tech Mono', monospace) !important; }
+.cm-gutters { background: rgba(13,9,23,0.8) !important; border-right: 1px solid rgba(139,92,246,0.15) !important; }
+.cm-activeLineGutter { background: rgba(139,92,246,0.08) !important; }
+.cm-activeLine { background: rgba(139,92,246,0.06) !important; }
+.cm-cursor { border-left-color: #8b5cf6 !important; }
+.cm-selectionBackground { background: rgba(139,92,246,0.2) !important; }
+
+@layer utilities {
+  .text-shadow-rune  { text-shadow: 0 0 20px rgba(139,92,246,0.5); }
+  .text-shadow-gold  { text-shadow: 0 0 20px rgba(240,180,41,0.4); }
+  .border-rune-glow  { box-shadow: 0 0 15px rgba(139,92,246,0.3); }
+  .border-gold-glow  { box-shadow: 0 0 15px rgba(240,180,41,0.3); }
+}
