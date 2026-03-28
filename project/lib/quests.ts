@@ -1,4 +1,4 @@
-import type { Floor, Hint, Quest, UserProgress } from '@/types'
+import type { Floor, Hint, Quest, QuestLine, UserProgress } from '@/types'
 import { QUESTS as DATA_QUESTS } from '@/lib/data/quests'
 
 export const TELEPORT_SCROLL_COST = 120
@@ -134,7 +134,24 @@ function normalizeQuest(quest: Quest): Quest {
   }
 }
 
+function cloneQuestTrack(
+  quests: Quest[],
+  questLine: Exclude<QuestLine, 'Hidden Contracts'>,
+  options?: { idPrefix?: string }
+) {
+  return quests.map((quest, index) => ({
+    ...quest,
+    id: options?.idPrefix ? `${options.idPrefix}${String(index + 1).padStart(2, '0')}` : quest.id,
+    questLine,
+    questSequence: index + 1,
+  }))
+}
+
 export const CORE_SQLNOIR_QUESTS: Quest[] = DATA_QUESTS.map(normalizeQuest)
+export const KAZI_QUESTS: Quest[] = cloneQuestTrack(CORE_SQLNOIR_QUESTS, 'Kazi Quests')
+export const AZM_QUESTS: Quest[] = cloneQuestTrack(CORE_SQLNOIR_QUESTS, 'Azm Quests', {
+  idPrefix: 'AZ',
+})
 
 const RAW_SECRET_QUESTS: Quest[] = [
   {
@@ -569,9 +586,12 @@ LIMIT 1;`,
   },
 ]
 
-export const SECRET_QUESTS: Quest[] = RAW_SECRET_QUESTS.map(normalizeQuest)
+export const SECRET_QUESTS: Quest[] = RAW_SECRET_QUESTS.map(quest => ({
+  ...normalizeQuest(quest),
+  questLine: 'Hidden Contracts',
+}))
 
-export const QUESTS: Quest[] = [...CORE_SQLNOIR_QUESTS, ...SECRET_QUESTS]
+export const QUESTS: Quest[] = [...KAZI_QUESTS, ...AZM_QUESTS, ...SECRET_QUESTS]
 
 export const QUESTS_MAP: Record<string, Quest> = Object.fromEntries(
   QUESTS.map(quest => [quest.id, quest])

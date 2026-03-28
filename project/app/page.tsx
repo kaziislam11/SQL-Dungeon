@@ -2,6 +2,48 @@ import Link from 'next/link'
 import { CORE_SQLNOIR_QUESTS, SECRET_QUESTS } from '@/lib/quests'
 import { AZM_TRIALS, KAZI_TRIALS } from '@/lib/data/paired-problems'
 
+const HERO_ORBITS = [
+  {
+    insetClass: 'inset-0',
+    ringClass: 'border-[rgba(150,156,176,0.16)]',
+    glowClass: 'shadow-[0_0_30px_rgba(120,128,156,0.08)]',
+    spinClass: 'animate-spin-slow',
+    starClass: 'text-[rgba(224,202,143,0.78)]',
+    stars: [
+      { top: '-0.75rem', left: '50%' },
+      { top: '20%', right: '-0.6rem' },
+      { bottom: '-0.8rem', left: '26%' },
+      { top: '72%', left: '-0.55rem' },
+    ],
+  },
+  {
+    insetClass: 'inset-10',
+    ringClass: 'border-[rgba(132,124,150,0.16)]',
+    glowClass: 'shadow-[0_0_24px_rgba(93,85,118,0.08)]',
+    spinClass: 'animate-spin-medium',
+    starClass: 'text-[rgba(196,200,214,0.66)]',
+    stars: [
+      { top: '8%', left: '22%' },
+      { top: '48%', right: '-0.7rem' },
+      { bottom: '10%', left: '58%' },
+      { top: '58%', left: '-0.7rem' },
+    ],
+  },
+  {
+    insetClass: 'inset-24',
+    ringClass: 'border-[rgba(124,130,148,0.15)]',
+    glowClass: 'shadow-[0_0_18px_rgba(101,108,131,0.08)]',
+    spinClass: 'animate-spin-fast',
+    starClass: 'text-[rgba(178,160,214,0.6)]',
+    stars: [
+      { top: '-0.65rem', left: '44%' },
+      { top: '28%', right: '-0.55rem' },
+      { bottom: '-0.7rem', left: '54%' },
+      { top: '66%', left: '-0.55rem' },
+    ],
+  },
+]
+
 export default function HomePage() {
   const previewQuests = CORE_SQLNOIR_QUESTS.slice(0, 6)
   const trialCount = KAZI_TRIALS.length + AZM_TRIALS.length
@@ -15,9 +57,23 @@ export default function HomePage() {
         <div className="pointer-events-none absolute inset-0 bg-[repeating-linear-gradient(0deg,transparent,transparent_38px,rgba(255,255,255,0.012)_38px,rgba(255,255,255,0.012)_40px),repeating-linear-gradient(90deg,transparent,transparent_58px,rgba(255,255,255,0.008)_58px,rgba(255,255,255,0.008)_60px)]" />
 
         <div className="pointer-events-none absolute left-1/2 top-1/2 h-[700px] w-[700px] -translate-x-1/2 -translate-y-1/2">
-          <div className="absolute inset-0 animate-spin-slow rounded-full border border-rune/10" />
-          <div className="absolute inset-10 animate-spin-medium rounded-full border border-gold/8" />
-          <div className="absolute inset-24 animate-spin-fast rounded-full border border-rune/10" />
+          {HERO_ORBITS.map(orbit => (
+            <div
+              key={orbit.insetClass}
+              className={`absolute ${orbit.insetClass} ${orbit.spinClass} rounded-full border ${orbit.ringClass} ${orbit.glowClass}`}
+            >
+              {orbit.stars.map((star, index) => (
+                <span
+                  key={`${orbit.insetClass}-${index}`}
+                  aria-hidden="true"
+                  className={`absolute font-cinzel text-lg leading-none ${orbit.starClass} drop-shadow-[0_0_10px_rgba(255,230,170,0.18)]`}
+                  style={star}
+                >
+                  *
+                </span>
+              ))}
+            </div>
+          ))}
           <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle,rgba(139,92,246,0.07)_0%,transparent_65%)]" />
         </div>
 

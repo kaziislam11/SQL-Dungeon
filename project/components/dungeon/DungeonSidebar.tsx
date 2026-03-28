@@ -1,8 +1,10 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import {
+  ChevronRight,
   Lock,
   LogOut,
   ScrollText,
@@ -18,7 +20,7 @@ import {
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils/cn'
 import { getQuestDisplayTitle, isQuestRevealed } from '@/lib/quests'
-import type { Quest, UserProgress } from '@/types'
+import type { Quest, QuestLine, UserProgress } from '@/types'
 
 interface Props {
   quests: Quest[]
@@ -84,6 +86,19 @@ function getCollapsedQuestMeta({
   }
 }
 
+const QUEST_GROUP_ORDER: QuestLine[] = ['Kazi Quests', 'Azm Quests', 'Hidden Contracts']
+
+function getQuestGroupIcon(group: QuestLine) {
+  switch (group) {
+    case 'Kazi Quests':
+      return Shield
+    case 'Azm Quests':
+      return Swords
+    default:
+      return Sparkles
+  }
+}
+
 export default function DungeonSidebar({
   quests,
   activeIdx,
@@ -99,6 +114,50 @@ export default function DungeonSidebar({
 }: Props) {
   const router = useRouter()
   const teleportScrolls = progress.teleportScrolls ?? 0
+  const activeQuest = quests[activeIdx]
+  const [expandedGroups, setExpandedGroups] = useState<Record<QuestLine, boolean>>({
+    'Kazi Quests': true,
+    'Azm Quests': false,
+    'Hidden Contracts': false,
+  })
+
+  const questGroups = QUEST_GROUP_ORDER
+    .map(group => ({
+      label: group,
+      quests: quests.filter(quest => quest.questLine === group),
+    }))
+    .filter(group => group.quests.length > 0)
+
+  useEffect(() => {
+    const activeGroup = activeQuest?.questLine
+    if (!activeGroup) return
+
+    setExpandedGroups(prev => ({
+      ...prev,
+      [activeGroup]: true,
+    }))
+  }, [activeQuest?.questLine])
+
+  function toggleQuestGroup(group: QuestLine) {
+    setExpandedGroups(prev => ({
+      ...prev,
+      [group]: !prev[group],
+    }))
+  }
+
+  function selectQuestGroup(group: QuestLine, groupQuests: Quest[]) {
+    if (group !== 'Hidden Contracts' && activeQuest?.questLine !== group) {
+      const targetQuest = groupQuests.find(groupQuest => {
+        const questIdx = quests.findIndex(quest => quest.id === groupQuest.id)
+        return questIdx >= 0 && canAccess(questIdx)
+      }) ?? groupQuests[0]
+
+      const questIdx = quests.findIndex(quest => quest.id === targetQuest?.id)
+      if (questIdx >= 0) onSelectQuest(questIdx)
+    }
+
+    toggleQuestGroup(group)
+  }
 
   async function handleSignOut() {
     const supabase = createClient()
@@ -244,91 +303,157 @@ export default function DungeonSidebar({
           <ScrollText className="mx-auto h-4 w-4" />
         </span>
         <span className="hidden font-cinzel text-[0.62rem] tracking-[0.28em] uppercase text-rune-dim group-hover/sidebar:inline">
-          Quest Log
+          Quest Tracks
         </span>
       </div>
 
       <nav className="flex-1">
-        {quests.map((q, i) => {
-          const qp = progress.quests[q.id]
-          const completed = !!qp?.completed
-          const revealed = isQuestRevealed(q, progress)
-          const locked = !canAccess(i)
-          const active = activeIdx === i
-          const hiddenSecret = !!q.secret && !revealed
-          const displayTitle = getQuestDisplayTitle(q, progress)
-          const { Icon, iconClassName, shellClassName } = getCollapsedQuestMeta({
-            active,
-            locked,
-            completed,
-            hiddenSecret,
-          })
+        {questGroups.map(group => {
+          const GroupIcon = getQuestGroupIcon(group.label)
+          const groupActive = activeQuest?.questLine === group.label
 
           return (
-            <button
-              key={q.id}
-              title={`${q.id}: ${displayTitle}`}
-              aria-label={`${q.id}: ${displayTitle}`}
-              onClick={() => {
-                if (hiddenSecret) {
-                  toast.error('Use a Teleport Scroll in the shop to reveal this quest.')
-                  return
-                }
-                if (locked) {
-                  toast.error('Complete the previous quest first.')
-                  return
-                }
-                onSelectQuest(i)
-              }}
-              className={cn(
-                'group/item relative w-full border-b border-rune/8 px-2 py-3 text-center transition-all duration-200 group-hover/sidebar:px-5 group-hover/sidebar:py-4 group-hover/sidebar:text-left',
-                active && 'bg-rune/10 shadow-[inset_0_0_0_1px_rgba(139,92,246,0.18)]',
-                !active && !locked && 'hover:bg-gradient-to-r hover:from-rune/14 hover:to-transparent hover:shadow-[inset_0_0_0_1px_rgba(240,180,41,0.12)]',
-                !active && !locked && 'group-hover/sidebar:hover:border-l-2 group-hover/sidebar:hover:border-l-gold/60 group-hover/sidebar:hover:pl-6',
-                locked && 'cursor-not-allowed opacity-35',
-                completed && 'opacity-70',
-              )}
-            >
-              <div className="flex items-center justify-center group-hover/sidebar:hidden">
-                <div
-                  className={cn(
-                    'flex h-10 w-10 items-center justify-center rounded-2xl border transition-all',
-                    shellClassName,
-                  )}
-                >
-                  <Icon className={cn('h-4.5 w-4.5', iconClassName)} />
-                </div>
-              </div>
-
-              <div className="hidden group-hover/sidebar:block">
-                {completed && (
-                  <Star className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 fill-current text-gold" />
+            <div key={group.label} className="border-b border-rune/8">
+              <button
+                title={group.label}
+                aria-label={group.label}
+                onClick={() => selectQuestGroup(group.label, group.quests)}
+                className={cn(
+                  'w-full px-2 py-3 text-center transition-all duration-200 group-hover/sidebar:px-5 group-hover/sidebar:py-4 group-hover/sidebar:text-left',
+                  groupActive && 'bg-rune/8',
+                  !groupActive && 'hover:bg-rune/6',
                 )}
-
-                <div className="font-cinzel text-[0.62rem] tracking-[0.18em] uppercase text-mist transition-colors duration-200 group-hover/item:text-gold-dim">
-                  {q.id} - {q.rank}
-                </div>
-                <div className="mt-0.5 font-cinzel text-[0.94rem] leading-snug text-parchment transition-colors duration-200 group-hover/item:text-white">
-                  {displayTitle}
-                </div>
-                {hiddenSecret && (
-                  <div className="mt-1 font-cinzel text-[0.56rem] tracking-[0.15em] uppercase text-fuchsia-300/80">
-                    Hidden until a Teleport Scroll is used
+              >
+                <div className="flex items-center justify-center group-hover/sidebar:hidden">
+                  <div
+                    className={cn(
+                      'flex h-10 w-10 items-center justify-center rounded-2xl border transition-all',
+                      groupActive
+                        ? 'border-rune/60 bg-rune/18 text-rune shadow-[0_0_18px_rgba(139,92,246,0.18)]'
+                        : 'border-rune/20 bg-rune/5 text-parchment',
+                    )}
+                  >
+                    <GroupIcon className="h-4.5 w-4.5" />
                   </div>
-                )}
-                <div className="mt-1.5 flex gap-0.5">
-                  {Array.from({ length: 5 }, (_, s) => (
-                    <Star
-                      key={s}
-                      className={cn(
-                        'h-3 w-3',
-                        s < q.diff ? 'fill-current text-gold' : 'text-gold/20',
-                      )}
-                    />
-                  ))}
                 </div>
-              </div>
-            </button>
+
+                <div className="hidden items-center justify-between gap-3 group-hover/sidebar:flex">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div
+                      className={cn(
+                        'flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border transition-all',
+                        groupActive
+                          ? 'border-rune/60 bg-rune/18 text-rune'
+                          : 'border-rune/20 bg-rune/5 text-parchment',
+                      )}
+                    >
+                      <GroupIcon className="h-4.5 w-4.5" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-cinzel text-[0.88rem] tracking-[0.08em] text-parchment">
+                        {group.label}
+                      </div>
+                      <div className="mt-0.5 font-cinzel text-[0.58rem] uppercase tracking-[0.18em] text-mist">
+                        {group.quests.length} quests
+                      </div>
+                    </div>
+                  </div>
+                  <ChevronRight
+                    className={cn(
+                      'h-4 w-4 shrink-0 text-rune-dim transition-transform duration-200',
+                      expandedGroups[group.label] && 'rotate-90 text-rune',
+                    )}
+                  />
+                </div>
+              </button>
+
+              {expandedGroups[group.label] && (
+                <div className="hidden gap-2 px-3 pb-3 group-hover/sidebar:flex group-hover/sidebar:flex-col group-hover/sidebar:px-5">
+                  {group.quests.map(q => {
+                    const questIdx = quests.findIndex(quest => quest.id === q.id)
+                    const qp = progress.quests[q.id]
+                    const completed = !!qp?.completed
+                    const revealed = isQuestRevealed(q, progress)
+                    const locked = questIdx < 0 ? true : !canAccess(questIdx)
+                    const active = activeIdx === questIdx
+                    const hiddenSecret = !!q.secret && !revealed
+                    const displayTitle = getQuestDisplayTitle(q, progress)
+                    const { Icon, iconClassName, shellClassName } = getCollapsedQuestMeta({
+                      active,
+                      locked,
+                      completed,
+                      hiddenSecret,
+                    })
+
+                    return (
+                      <button
+                        key={q.id}
+                        title={`${q.id}: ${displayTitle}`}
+                        aria-label={`${q.id}: ${displayTitle}`}
+                        onClick={() => {
+                          if (hiddenSecret) {
+                            toast.error('Use a Teleport Scroll in the shop to reveal this quest.')
+                            return
+                          }
+                          if (locked) {
+                            toast.error('Complete the previous quest first.')
+                            return
+                          }
+                          onSelectQuest(questIdx)
+                        }}
+                        className={cn(
+                          'group/item relative w-full rounded-2xl border px-3 py-3 text-left transition-all duration-200',
+                          active && 'border-rune/50 bg-rune/12 shadow-[inset_0_0_0_1px_rgba(139,92,246,0.18)]',
+                          !active && !locked && 'border-rune/12 bg-rune/4 hover:border-gold/35 hover:bg-rune/10',
+                          locked && 'cursor-not-allowed border-rune/8 bg-transparent opacity-35',
+                          completed && 'border-gold/20',
+                        )}
+                      >
+                        {completed && (
+                          <Star className="absolute right-3 top-3 h-4 w-4 fill-current text-gold" />
+                        )}
+
+                        <div className="flex items-start gap-3">
+                          <div
+                            className={cn(
+                              'mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl border transition-all',
+                              shellClassName,
+                            )}
+                          >
+                            <Icon className={cn('h-4 w-4', iconClassName)} />
+                          </div>
+
+                          <div className="min-w-0 flex-1">
+                            <div className="font-cinzel text-[0.58rem] tracking-[0.18em] uppercase text-mist transition-colors duration-200 group-hover/item:text-gold-dim">
+                              {q.id} - {q.rank}
+                            </div>
+                            <div className="mt-1 font-cinzel text-[0.92rem] leading-snug text-parchment transition-colors duration-200 group-hover/item:text-white">
+                              {displayTitle}
+                            </div>
+                            {hiddenSecret && (
+                              <div className="mt-1.5 font-cinzel text-[0.56rem] tracking-[0.15em] uppercase text-fuchsia-300/80">
+                                Hidden until a Teleport Scroll is used
+                              </div>
+                            )}
+                            <div className="mt-2 flex gap-0.5">
+                              {Array.from({ length: 5 }, (_, s) => (
+                                <Star
+                                  key={s}
+                                  className={cn(
+                                    'h-3 w-3',
+                                    s < q.diff ? 'fill-current text-gold' : 'text-gold/20',
+                                  )}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
           )
         })}
       </nav>

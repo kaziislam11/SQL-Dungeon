@@ -4,6 +4,7 @@
 
 // ── Quest & Floor ─────────────────────────────────────────
 export type Rank = 'Mythic' | 'Legendary' | 'Epic' | 'Rare' | 'Uncommon' | 'Common'
+export type QuestLine = 'Kazi Quests' | 'Azm Quests' | 'Hidden Contracts'
 
 export interface SchemaColumn {
   col:  string
@@ -47,6 +48,8 @@ export interface Quest {
   tags:      string[]
   secret?:   boolean
   hiddenTitle?: string
+  questLine?: QuestLine
+  questSequence?: number
 }
 
 // ── User Progress ─────────────────────────────────────────

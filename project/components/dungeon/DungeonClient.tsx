@@ -30,8 +30,13 @@ export default function DungeonClient({ userId }: Props) {
   function canAccessQuest(idx: number): boolean {
     const quest = QUESTS[idx]
     if (quest.secret) return isQuestRevealed(quest, progress)
-    if (idx === 0) return true
-    return !!progress.quests[QUESTS[idx - 1].id]?.completed
+
+    const lineQuests = QUESTS.filter(candidate => candidate.questLine === quest.questLine && !candidate.secret)
+    const lineIdx = lineQuests.findIndex(candidate => candidate.id === quest.id)
+
+    if (lineIdx <= 0) return true
+
+    return !!progress.quests[lineQuests[lineIdx - 1].id]?.completed
   }
 
   async function handleRevealNextSecretQuest() {
