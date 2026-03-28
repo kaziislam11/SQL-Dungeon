@@ -14,6 +14,11 @@ interface QueryEntry {
   result: string
 }
 
+interface QueryResult {
+  columns: string[]
+  values: any[][]
+}
+
 interface Props {
   quest: Quest
   questProgress: QuestProgress | undefined
@@ -32,9 +37,9 @@ export default function QuestView({
   saving,
 }: Props) {
   const [activeFloor, setActiveFloor] = useState(0)
-  const [db, setDb] = useState<any>(null)
+  const [sqlEngine, setSqlEngine] = useState<any>(null)
   const [query, setQuery] = useState('')
-  const [results, setResults] = useState<{ columns: string[]; values: any[][] } | null>(null)
+  const [results, setResults] = useState<QueryResult | null>(null)
   const [queryError, setQueryError] = useState<string | null>(null)
   const [clueVisible, setClueVisible] = useState(false)
   const [schemaOpen, setSchemaOpen] = useState(false)
@@ -71,9 +76,7 @@ export default function QuestView({
       const SQL = await sqljs.default({
         locateFile: () => '/sql-wasm.wasm',
       })
-      const database = new SQL.Database()
-      database.run(quest.seed)
-      if (mounted) setDb(database)
+      if (mounted) setSqlEngine(SQL)
     }
 
     bootDb()
@@ -86,13 +89,14 @@ export default function QuestView({
   const floor = quest.floors[activeFloor]
   const isFloorCleared = floorsCleared.includes(activeFloor)
   const isFinalFloor = activeFloor === quest.floors.length - 1
+  const canSealCase = completed || isFloorCleared
 
   function canAccessFloor(idx: number) {
     if (idx === 0) return true
     return completed || floorsCleared.includes(idx - 1)
   }
 
-  function saveQueryResult(resultSet: { columns: string[]; values: any[][] } | null) {
+  function saveQueryResult(resultSet: QueryResult | null) {
     const result = resultSet
       ? [resultSet.columns.join('\t'), ...resultSet.values.map(row => row.join('\t'))].join('\n')
       : ''
@@ -115,8 +119,39 @@ export default function QuestView({
     })
   }
 
+  function getPrimaryResult(execResult: any[]): QueryResult | null {
+    return execResult.length ? execResult[0] : null
+  }
+
+  function normalizeValue(value: any) {
+    if (value === null || value === undefined) return 'NULL'
+    if (value instanceof Uint8Array) return Array.from(value).join(',')
+    return String(value)
+  }
+
+  function serializeRows(resultSet: QueryResult | null) {
+    return (resultSet?.values ?? [])
+      .map(row => JSON.stringify(row.map(normalizeValue)))
+      .sort()
+  }
+
+  function matchesExpectedResult(actual: QueryResult | null, expected: QueryResult | null) {
+    if ((actual?.columns.length ?? 0) !== (expected?.columns.length ?? 0)) {
+      return false
+    }
+
+    const actualRows = serializeRows(actual)
+    const expectedRows = serializeRows(expected)
+
+    if (actualRows.length !== expectedRows.length) {
+      return false
+    }
+
+    return actualRows.every((row, index) => row === expectedRows[index])
+  }
+
   function runQuery() {
-    if (!db || !query.trim()) {
+    if (!sqlEngine || !query.trim()) {
       toast.error('Write a spell first.')
       return
     }
@@ -124,26 +159,59 @@ export default function QuestView({
     setQueryError(null)
     setResults(null)
 
+    let playerDb: any = null
+    let expectedDb: any = null
+
     try {
-      const execResult = db.exec(query)
-      const nextResults = execResult.length
-        ? execResult[0]
+      playerDb = new sqlEngine.Database()
+      playerDb.run(quest.seed)
+
+      const execResult = playerDb.exec(query)
+      const actualResult = getPrimaryResult(execResult)
+      const nextResults = actualResult
+        ? actualResult
         : { columns: ['Result'], values: [['Query ran with no rows returned.']] }
 
       setResults(nextResults)
-      saveQueryResult(execResult.length ? execResult[0] : null)
+      saveQueryResult(actualResult)
 
-      if (activeFloor < quest.floors.length - 1 && !isFloorCleared) {
-        onClearFloor(quest.id, activeFloor).then(() => {
-          toast.success(`Part ${activeFloor + 1} cleared.`)
-        })
+      expectedDb = new sqlEngine.Database()
+      expectedDb.run(quest.seed)
+
+      const expectedResult = getPrimaryResult(expectedDb.exec(floor.clue.query))
+      const solvedPart = matchesExpectedResult(actualResult, expectedResult)
+
+      if (solvedPart) {
+        if (!isFloorCleared) {
+          void onClearFloor(quest.id, activeFloor).then(() => {
+            toast.success(
+              isFinalFloor
+                ? `Part ${activeFloor + 1} cleared. Submit your verdict.`
+                : `Part ${activeFloor + 1} cleared.`
+            )
+          })
+        } else if (isFinalFloor && !completed) {
+          toast.success('That solves this part. Submit your verdict when you are ready.')
+        }
+
+        return
       }
+
+      toast.error('That query ran, but it does not solve this part yet.')
     } catch (err: any) {
       setQueryError(err.message)
+    } finally {
+      playerDb?.close?.()
+      expectedDb?.close?.()
     }
   }
 
   async function checkVerdict() {
+    if (!canSealCase) {
+      toast.error('Solve this part with a correct query before sealing the case.')
+      return
+    }
+
     if (!verdictInput.trim()) {
       toast.error('Enter your verdict first.')
       return
@@ -458,6 +526,11 @@ export default function QuestView({
             <p className="mb-4 font-cinzel text-[0.7rem] uppercase tracking-[0.2em] text-gold">
               Submit Your Verdict
             </p>
+            {!canSealCase && (
+              <p className="mb-4 font-crimson text-base italic text-mist">
+                Prove this final part with the right query first, then the verdict seal will open.
+              </p>
+            )}
             <input
               type="text"
               value={verdictInput}
@@ -466,11 +539,13 @@ export default function QuestView({
                 if (event.key === 'Enter') void checkVerdict()
               }}
               placeholder={quest.answerHint}
-              className="w-full border border-rune/20 bg-deep px-4 py-3 font-mono text-sm text-parchment outline-none transition-colors placeholder:text-mist/40 focus:border-rune-dim"
+              disabled={!canSealCase}
+              className="w-full border border-rune/20 bg-deep px-4 py-3 font-mono text-sm text-parchment outline-none transition-colors placeholder:text-mist/40 focus:border-rune-dim disabled:cursor-not-allowed disabled:opacity-50"
             />
             <button
               onClick={() => void checkVerdict()}
-              className="mt-3 border border-gold/25 bg-gold/10 px-8 py-2.5 font-cinzel text-sm font-bold uppercase tracking-[0.2em] text-gold transition-all hover:bg-gold/20"
+              disabled={!canSealCase}
+              className="mt-3 border border-gold/25 bg-gold/10 px-8 py-2.5 font-cinzel text-sm font-bold uppercase tracking-[0.2em] text-gold transition-all hover:bg-gold/20 disabled:cursor-not-allowed disabled:opacity-50"
             >
               Seal the Case
             </button>
