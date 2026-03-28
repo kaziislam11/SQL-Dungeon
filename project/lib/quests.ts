@@ -1,5 +1,6 @@
 import type { Floor, Hint, Quest, QuestLine, UserProgress } from '@/types'
 import { QUESTS as DATA_QUESTS } from '@/lib/data/quests'
+import { DUNGEON_CONTRACTS, type DungeonContract } from '@/lib/data/dungeon-contracts'
 
 export const TELEPORT_SCROLL_COST = 120
 
@@ -147,11 +148,82 @@ function cloneQuestTrack(
   }))
 }
 
+function buildAzmQuestFromContract(contract: DungeonContract): Quest {
+  const hintBaseId = contract.proposition * 100
+  const floorTitles = [
+    'Floor I - Situation Scan',
+    'Floor II - Pressure Point',
+    'Floor III - Deep Cut',
+    'Floor IV - Final Recommendation',
+  ]
+
+  return normalizeQuest({
+    id: contract.quest.id,
+    title: contract.quest.title,
+    rank: contract.quest.rank,
+    rankClass: contract.quest.rankClass,
+    diff: contract.quest.diff,
+    lore: contract.quest.lore,
+    answer: contract.quest.answer,
+    answerHint: contract.quest.answerHint,
+    xp: contract.quest.xp,
+    schema: contract.schema,
+    seed: contract.seed,
+    tags: contract.tags,
+    questLine: 'Azm Quests',
+    questSequence: contract.proposition,
+    floors: [
+      {
+        title: floorTitles[0],
+        intro: contract.requirements[0],
+        hint: contract.requirements[0],
+        hints: [{ id: hintBaseId + 1, cost: 0, text: 'Follow the evidence trail one layer at a time.' }],
+        clue: {
+          label: contract.starterQueries[0].label,
+          query: contract.starterQueries[0].query,
+          desc: contract.starterQueries[0].desc,
+        },
+      },
+      {
+        title: floorTitles[1],
+        intro: contract.requirements[1],
+        hint: contract.requirements[1],
+        hints: [{ id: hintBaseId + 2, cost: 0, text: 'Check the grouped results before you narrow the field.' }],
+        clue: {
+          label: contract.starterQueries[1].label,
+          query: contract.starterQueries[1].query,
+          desc: contract.starterQueries[1].desc,
+        },
+      },
+      {
+        title: floorTitles[2],
+        intro: contract.requirements[2],
+        hint: contract.requirements[2],
+        hints: [{ id: hintBaseId + 3, cost: 0, text: 'This layer is about comparison, not just retrieval.' }],
+        clue: {
+          label: contract.starterQueries[2].label,
+          query: contract.starterQueries[2].query,
+          desc: contract.starterQueries[2].desc,
+        },
+      },
+      {
+        title: floorTitles[3],
+        intro: contract.requirements[3],
+        hint: contract.requirements[3],
+        hints: [{ id: hintBaseId + 4, cost: 0, text: 'Your final answer should match the strongest ranked outcome.' }],
+        clue: {
+          label: contract.quest.finalClueLabel,
+          query: contract.quest.finalClueQuery,
+          desc: contract.quest.finalClueDesc,
+        },
+      },
+    ],
+  })
+}
+
 export const CORE_SQLNOIR_QUESTS: Quest[] = DATA_QUESTS.map(normalizeQuest)
 export const KAZI_QUESTS: Quest[] = cloneQuestTrack(CORE_SQLNOIR_QUESTS, 'Kazi Quests')
-export const AZM_QUESTS: Quest[] = cloneQuestTrack(CORE_SQLNOIR_QUESTS, 'Azm Quests', {
-  idPrefix: 'AZ',
-})
+export const AZM_QUESTS: Quest[] = DUNGEON_CONTRACTS.map(buildAzmQuestFromContract)
 
 const RAW_SECRET_QUESTS: Quest[] = [
   {

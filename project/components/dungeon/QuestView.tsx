@@ -245,7 +245,7 @@ export default function QuestView({
   }
 
   async function handleExport(format: 'ipynb' | 'sql') {
-    if (!savedQueries.length) {
+    if (format === 'sql' && !savedQueries.length) {
       toast.error('Run at least one query first.')
       return
     }
@@ -266,7 +266,7 @@ export default function QuestView({
       anchor.download = `${quest.id}_${quest.title.replace(/\s+/g, '_')}.${format === 'ipynb' ? 'ipynb' : 'sql'}`
       anchor.click()
       URL.revokeObjectURL(url)
-      toast.success(`Exported ${format}.`)
+      toast.success(format === 'ipynb' ? 'Notebook notes downloaded.' : `Exported ${format}.`)
     } catch {
       toast.error('Export failed.')
     } finally {
@@ -300,24 +300,22 @@ export default function QuestView({
           {quest.lore}
         </p>
 
-        {savedQueries.length > 0 && (
-          <div className="mt-4 flex gap-2">
-            <button
-              onClick={() => handleExport('ipynb')}
-              disabled={exporting}
-              className="border border-rune/25 px-3 py-1.5 font-cinzel text-[0.6rem] uppercase tracking-[0.15em] text-rune-dim transition-colors hover:border-rune hover:text-rune disabled:opacity-50"
-            >
-              Export .ipynb
-            </button>
-            <button
-              onClick={() => handleExport('sql')}
-              disabled={exporting}
-              className="border border-rune/25 px-3 py-1.5 font-cinzel text-[0.6rem] uppercase tracking-[0.15em] text-rune-dim transition-colors hover:border-rune hover:text-rune disabled:opacity-50"
-            >
-              Export .sql
-            </button>
-          </div>
-        )}
+        <div className="mt-4 flex flex-wrap gap-2">
+          <button
+            onClick={() => handleExport('ipynb')}
+            disabled={exporting}
+            className="border border-rune/25 px-3 py-1.5 font-cinzel text-[0.6rem] uppercase tracking-[0.15em] text-rune-dim transition-colors hover:border-rune hover:text-rune disabled:opacity-50"
+          >
+            Notebook Notes .ipynb
+          </button>
+          <button
+            onClick={() => handleExport('sql')}
+            disabled={exporting || !savedQueries.length}
+            className="border border-rune/25 px-3 py-1.5 font-cinzel text-[0.6rem] uppercase tracking-[0.15em] text-rune-dim transition-colors hover:border-rune hover:text-rune disabled:opacity-50"
+          >
+            Export Work .sql
+          </button>
+        </div>
       </div>
 
       <div className="flex border-b border-rune/15 bg-stone">

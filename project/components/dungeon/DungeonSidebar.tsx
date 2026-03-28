@@ -201,7 +201,7 @@ export default function DungeonSidebar({
         <div className="flex items-center justify-center group-hover/sidebar:justify-start">
           <div
             title="SQL:DUNGEON"
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-rune/30 bg-rune/10 text-rune"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-sm border border-rune/30 bg-rune/10 text-rune"
           >
             <Shield className="h-5 w-5" />
           </div>
@@ -220,7 +220,7 @@ export default function DungeonSidebar({
         <div className="flex items-center justify-center group-hover/sidebar:hidden">
           <div
             title={`Experience: ${progress.xp} XP`}
-            className="flex h-11 w-11 items-center justify-center rounded-2xl border border-gold/20 bg-gold/8 text-gold"
+            className="flex h-11 w-11 items-center justify-center rounded-sm border border-gold/20 bg-gold/8 text-gold"
           >
             <Zap className="h-5 w-5" />
           </div>
@@ -252,7 +252,7 @@ export default function DungeonSidebar({
         <div className="flex items-center justify-center group-hover/sidebar:hidden">
           <div
             title={`Arcane Shop: ${teleportScrolls} teleport scroll${teleportScrolls === 1 ? '' : 's'}`}
-            className="flex h-11 w-11 items-center justify-center rounded-2xl border border-fuchsia-500/25 bg-fuchsia-500/8 text-fuchsia-200"
+            className="flex h-11 w-11 items-center justify-center rounded-sm border border-fuchsia-500/25 bg-fuchsia-500/8 text-fuchsia-200"
           >
             <Wand2 className="h-5 w-5" />
           </div>
@@ -266,7 +266,7 @@ export default function DungeonSidebar({
             </span>
           </div>
 
-          <div className="rounded border border-fuchsia-500/25 bg-fuchsia-500/5 p-3 transition-all duration-200 group-hover/sidebar:border-fuchsia-400/35 group-hover/sidebar:bg-fuchsia-500/10">
+          <div className="rounded-sm border border-fuchsia-500/25 bg-fuchsia-500/5 p-3 transition-all duration-200 group-hover/sidebar:border-fuchsia-400/35 group-hover/sidebar:bg-fuchsia-500/10">
             <div className="font-cinzel text-[0.74rem] tracking-[0.15em] uppercase text-fuchsia-200">
               Teleport Scroll
             </div>
@@ -327,7 +327,7 @@ export default function DungeonSidebar({
                 <div className="flex items-center justify-center group-hover/sidebar:hidden">
                   <div
                     className={cn(
-                      'flex h-10 w-10 items-center justify-center rounded-2xl border transition-all',
+                      'flex h-10 w-10 items-center justify-center rounded-sm border transition-all',
                       groupActive
                         ? 'border-rune/60 bg-rune/18 text-rune shadow-[0_0_18px_rgba(139,92,246,0.18)]'
                         : 'border-rune/20 bg-rune/5 text-parchment',
@@ -341,7 +341,7 @@ export default function DungeonSidebar({
                   <div className="flex min-w-0 items-center gap-3">
                     <div
                       className={cn(
-                        'flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border transition-all',
+                        'flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border transition-all',
                         groupActive
                           ? 'border-rune/60 bg-rune/18 text-rune'
                           : 'border-rune/20 bg-rune/5 text-parchment',
@@ -402,7 +402,7 @@ export default function DungeonSidebar({
                           onSelectQuest(questIdx)
                         }}
                         className={cn(
-                          'group/item relative w-full rounded-2xl border px-3 py-3 text-left transition-all duration-200',
+                          'group/item relative w-full rounded-sm border px-3 py-3 text-left transition-all duration-200',
                           active && 'border-rune/50 bg-rune/12 shadow-[inset_0_0_0_1px_rgba(139,92,246,0.18)]',
                           !active && !locked && 'border-rune/12 bg-rune/4 hover:border-gold/35 hover:bg-rune/10',
                           locked && 'cursor-not-allowed border-rune/8 bg-transparent opacity-35',
@@ -416,7 +416,7 @@ export default function DungeonSidebar({
                         <div className="flex items-start gap-3">
                           <div
                             className={cn(
-                              'mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl border transition-all',
+                              'mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border transition-all',
                               shellClassName,
                             )}
                           >
@@ -460,15 +460,15 @@ export default function DungeonSidebar({
 
       <div className="flex flex-col gap-2 border-t border-rune/10 p-2 transition-all duration-300 group-hover/sidebar:p-4">
         <button
-          title="Kazi and Azm Trials"
-          aria-label="Kazi and Azm Trials"
+          title="Dungeon Contracts"
+          aria-label="Dungeon Contracts"
           onClick={() => window.location.href = '/guild'}
           className="w-full border border-rune/30 bg-rune/8 py-2.5 text-center font-cinzel text-[0.7rem] tracking-[0.18em] uppercase text-rune transition-all duration-200 hover:border-rune/60 hover:bg-rune/20 hover:text-white"
         >
           <span className="group-hover/sidebar:hidden">
             <Swords className="mx-auto h-4 w-4" />
           </span>
-          <span className="hidden group-hover/sidebar:inline">Kazi & Azm Trials</span>
+          <span className="hidden group-hover/sidebar:inline">Dungeon Contracts</span>
         </button>
         <button
           title="Guild Hall Leaderboard"

@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { CORE_SQLNOIR_QUESTS, SECRET_QUESTS } from '@/lib/quests'
-import { AZM_TRIALS, KAZI_TRIALS } from '@/lib/data/paired-problems'
+import { DUNGEON_CONTRACTS } from '@/lib/data/dungeon-contracts'
 
 const HERO_ORBITS = [
   {
@@ -46,7 +46,7 @@ const HERO_ORBITS = [
 
 export default function HomePage() {
   const previewQuests = CORE_SQLNOIR_QUESTS.slice(0, 6)
-  const trialCount = KAZI_TRIALS.length + AZM_TRIALS.length
+  const contractCount = DUNGEON_CONTRACTS.length
 
   return (
     <main className="min-h-screen bg-abyss">
@@ -90,7 +90,7 @@ export default function HomePage() {
             className="mt-2 block font-cinzel text-rune text-shadow-rune"
             style={{ fontSize: '0.34em', letterSpacing: '0.28em' }}
           >
-            SQLNOIR MYSTERIES AND GUILD TRIALS
+            SQLNOIR MYSTERIES AND DUNGEON CONTRACTS
           </span>
         </h1>
 
@@ -100,7 +100,7 @@ export default function HomePage() {
 
         <p className="relative z-10 mx-auto mb-12 max-w-3xl animate-rise font-crimson text-lg italic leading-loose text-mist opacity-0 [animation-delay:1s]">
           A gamified T-SQL project for junior and senior CS majors. Solve ten multi-part SQLNOIR mysteries, document your
-          work in notebook form, then switch into paired Kazi and Azm trials that simulate business stakeholder and
+          work in notebook form, then switch into ten paired Dungeon Contracts that simulate business stakeholder and
           programmer-analyst collaboration.
         </p>
 
@@ -108,10 +108,10 @@ export default function HomePage() {
           {[
             [String(CORE_SQLNOIR_QUESTS.length), 'Core Mysteries', 'independent SQLNOIR cases'],
             ['4', 'Sections Each', 'one final integrated query'],
-            [String(trialCount), 'Paired Trials', '5 Kazi + 5 Azm sessions'],
+            [String(contractCount), 'Dungeon Contracts', '10 paired propositions'],
             [String(SECRET_QUESTS.length), 'Hidden Bonus Quests', 'scroll-unlocked extras'],
           ].map(([value, label, detail]) => (
-            <div key={label} className="rounded border border-rune/15 bg-deep/80 px-6 py-5">
+            <div key={label} className="rounded-sm border border-rune/15 bg-deep/80 px-6 py-5">
               <span className="block font-cinzel text-4xl font-bold text-gold text-shadow-gold">{value}</span>
               <span className="mt-1 block font-cinzel text-xs uppercase tracking-widest text-parchment">{label}</span>
               <span className="mt-2 block font-crimson text-sm text-mist">{detail}</span>
@@ -154,7 +154,7 @@ export default function HomePage() {
               ['Notebook Storytelling', 'Document narrative reasoning, query evolution, results, and recommendations in a polished notebook workflow.'],
               ['Industry Practice', 'Alternate stakeholder and analyst roles, communicate clearly, and turn SQL output into real business decisions.'],
             ].map(([title, body]) => (
-              <div key={title} className="rounded border border-rune/15 bg-stone p-5">
+              <div key={title} className="rounded-sm border border-rune/15 bg-stone p-5">
                 <div className="mb-2 font-cinzel text-sm uppercase tracking-[0.12em] text-parchment">{title}</div>
                 <p className="font-crimson text-base leading-relaxed text-mist">{body}</p>
               </div>
@@ -177,7 +177,7 @@ export default function HomePage() {
 
           <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {previewQuests.map(quest => (
-              <div key={quest.id} className="relative border border-rune/20 bg-stone p-7 transition-all hover:-translate-y-1 hover:border-rune-dim">
+              <div key={quest.id} className="relative rounded-sm border border-rune/20 bg-stone p-7 transition-all hover:-translate-y-1 hover:border-rune-dim">
                 <span className={`absolute right-4 top-4 border px-2 py-0.5 font-cinzel text-[0.5rem] uppercase tracking-[0.15em] ${quest.rankClass}`}>
                   {quest.rank}
                 </span>
@@ -212,7 +212,7 @@ export default function HomePage() {
               ['III', 'Analysis', 'Apply functions, aggregates, and advanced reasoning.'],
               ['IV', 'Verdict', 'Deliver one integrated answer with the final SQLNOIR solution.'],
             ].map(([floor, title, description]) => (
-              <div key={floor} className="border border-rune/15 bg-abyss p-6 text-center transition-colors hover:bg-stone">
+              <div key={floor} className="rounded-sm border border-rune/15 bg-abyss p-6 text-center transition-colors hover:bg-stone">
                 <div className="mb-2 font-cinzel text-3xl font-black text-rune text-shadow-rune">{floor}</div>
                 <div className="mb-1 font-cinzel text-xs uppercase tracking-widest text-parchment">{title}</div>
                 <div className="font-crimson text-sm italic leading-relaxed text-mist">{description}</div>
@@ -225,26 +225,26 @@ export default function HomePage() {
       <section className="border-b border-rune/10 bg-deep py-24">
         <div className="mx-auto max-w-6xl px-8">
           <p className="mb-2 flex items-center gap-3 font-cinzel text-xs uppercase tracking-[0.35em] text-rune-dim before:text-gold before:content-['*']">
-            Guild Contracts <span className="h-px flex-1 bg-rune/15" />
+            Dungeon Contracts <span className="h-px flex-1 bg-rune/15" />
           </p>
           <h2 className="font-cinzel text-4xl font-bold text-parchment text-shadow-rune">
-            Kazi&apos;s Trials and Azm&apos;s Trials
+            Ten paired dungeon contracts
             <span className="mt-1 block font-cinzel text-base font-normal tracking-[0.15em] text-mist">
-              paired real-world SQL sessions with role rotation, notebook deliverables, and business recommendations
+              paired real-world SQL propositions with role rotation, notebook deliverables, and business recommendations
             </span>
           </h2>
 
           <div className="mt-10 grid gap-6 lg:grid-cols-2">
-            <div className="rounded border border-violet-500/25 bg-violet-500/5 p-6">
-              <div className="mb-2 font-cinzel text-xs uppercase tracking-[0.15em] text-violet-300">Kazi&apos;s Trials</div>
+            <div className="rounded-sm border border-rune/20 bg-rune/5 p-6">
+              <div className="mb-2 font-cinzel text-xs uppercase tracking-[0.15em] text-rune">Role Rotation</div>
               <p className="font-crimson text-base leading-relaxed text-parchment">
-                Five navigator-led sessions. The stakeholder guides the business framing, clarifies requirements, and explains why each query matters before the driver writes it.
+                Each proposition alternates emphasis between Navigator and Driver leadership so both pair members practice business framing, SQL execution, and mid-session handoff.
               </p>
             </div>
-            <div className="rounded border border-red-500/25 bg-red-500/5 p-6">
-              <div className="mb-2 font-cinzel text-xs uppercase tracking-[0.15em] text-red-300">Azm&apos;s Trials</div>
+            <div className="rounded-sm border border-gold/20 bg-gold/5 p-6">
+              <div className="mb-2 font-cinzel text-xs uppercase tracking-[0.15em] text-gold">Notebook Finish</div>
               <p className="font-crimson text-base leading-relaxed text-parchment">
-                Five driver-led sessions. The programmer-analyst pushes deeper SQL, tighter execution, refinement, and technical polish while still meeting the business objective.
+                Every contract ends with a shared notebook containing role notes, query evolution, evidence, and a final recommendation that could be handed to a stakeholder or employer.
               </p>
             </div>
           </div>
