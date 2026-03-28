@@ -274,7 +274,7 @@ export default function DungeonSidebar({
               <Download className="h-4 w-4" />
             </button>
             <p className="mt-2 text-[0.8rem] leading-relaxed text-mist">
-              Downloads one notebook with all 10 Kazi quests, 10 Azm quests, and 10 Dungeon Contracts.
+              Downloads one notebook with all 10 Kazi quests, 10 Azm quests, and 10 Guild Contracts.
             </p>
           </div>
         )}
@@ -524,15 +524,15 @@ export default function DungeonSidebar({
 
       <div className="flex flex-col gap-2 border-t border-rune/10 p-2 transition-all duration-300 group-hover/sidebar:p-4">
         <button
-          title="Dungeon Contracts"
-          aria-label="Dungeon Contracts"
+          title="Guild Contracts"
+          aria-label="Guild Contracts"
           onClick={() => window.location.href = '/guild'}
           className="w-full border border-rune/30 bg-rune/8 py-2.5 text-center font-cinzel text-[0.7rem] tracking-[0.18em] uppercase text-rune transition-all duration-200 hover:border-rune/60 hover:bg-rune/20 hover:text-white"
         >
           <span className="group-hover/sidebar:hidden">
             <Swords className="mx-auto h-4 w-4" />
           </span>
-          <span className="hidden group-hover/sidebar:inline">Dungeon Contracts</span>
+          <span className="hidden group-hover/sidebar:inline">Guild Contracts</span>
         </button>
         <button
           title="Guild Hall Leaderboard"

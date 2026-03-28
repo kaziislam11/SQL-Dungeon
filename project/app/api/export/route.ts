@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { buildMasterNotebook, buildNotebook, buildSQLFile } from '@/lib/utils/notebook-export'
 import { AZM_QUESTS, KAZI_QUESTS, QUESTS } from '@/lib/quests'
-import { DUNGEON_CONTRACTS } from '@/lib/data/dungeon-contracts'
+import { GUILD_CONTRACTS } from '@/lib/data/guild-contracts'
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient()
@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
   const { questId, format, queries = [] } = await req.json()
 
   if (format === 'master-ipynb') {
-    const notebook = buildMasterNotebook(KAZI_QUESTS, AZM_QUESTS, DUNGEON_CONTRACTS)
+    const notebook = buildMasterNotebook(KAZI_QUESTS, AZM_QUESTS, GUILD_CONTRACTS)
     return new NextResponse(JSON.stringify(notebook, null, 2), {
       headers: {
         'Content-Type': 'application/json',

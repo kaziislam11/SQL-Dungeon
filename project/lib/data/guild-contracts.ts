@@ -21,7 +21,7 @@ export interface ContractQuestPack {
   finalClueDesc: string
 }
 
-export interface DungeonContract {
+export interface GuildContract {
   id: string
   proposition: number
   title: string
@@ -52,7 +52,7 @@ export const CONTRACT_EVALUATION_CRITERIA = [
   'Documentation: the notebook captures role notes, query evolution, evidence, and final recommendations.',
 ]
 
-export const DUNGEON_CONTRACTS: DungeonContract[] = [
+export const GUILD_CONTRACTS: GuildContract[] = [
   {
     id: 'dc001',
     proposition: 1,

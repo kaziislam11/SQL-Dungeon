@@ -1,6 +1,6 @@
 import type { Floor, Hint, Quest, QuestLine, UserProgress } from '@/types'
 import { QUESTS as DATA_QUESTS } from '@/lib/data/quests'
-import { DUNGEON_CONTRACTS, type DungeonContract } from '@/lib/data/dungeon-contracts'
+import { GUILD_CONTRACTS, type GuildContract } from '@/lib/data/guild-contracts'
 
 export const TELEPORT_SCROLL_COST = 120
 
@@ -148,7 +148,7 @@ function cloneQuestTrack(
   }))
 }
 
-function buildAzmQuestFromContract(contract: DungeonContract): Quest {
+function buildAzmQuestFromContract(contract: GuildContract): Quest {
   const hintBaseId = contract.proposition * 100
   const floorTitles = [
     'Floor I - Situation Scan',
@@ -223,7 +223,7 @@ function buildAzmQuestFromContract(contract: DungeonContract): Quest {
 
 export const CORE_SQLNOIR_QUESTS: Quest[] = DATA_QUESTS.map(normalizeQuest)
 export const KAZI_QUESTS: Quest[] = cloneQuestTrack(CORE_SQLNOIR_QUESTS, 'Kazi Quests')
-export const AZM_QUESTS: Quest[] = DUNGEON_CONTRACTS.map(buildAzmQuestFromContract)
+export const AZM_QUESTS: Quest[] = GUILD_CONTRACTS.map(buildAzmQuestFromContract)
 
 const RAW_SECRET_QUESTS: Quest[] = [
   {

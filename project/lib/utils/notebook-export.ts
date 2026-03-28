@@ -2,8 +2,8 @@ import type { Quest } from '@/types'
 import {
   CONTRACT_EVALUATION_CRITERIA,
   CONTRACT_PROCESS_STEPS,
-  type DungeonContract,
-} from '@/lib/data/dungeon-contracts'
+  type GuildContract,
+} from '@/lib/data/guild-contracts'
 
 interface QueryEntry {
   floorTitle: string
@@ -199,8 +199,7 @@ function buildQuestNotebookCells(
 
     cells.push(
       codeCell(
-        savedEntry?.query ??
-          `-- ${sectionTitle}\n-- Section goal: ${floor.intro}\n-- Guidance: ${floor.hint}\n\n-- Write your T-SQL here`,
+        savedEntry?.query ?? floor.clue.query,
         savedEntry?.result ?? '',
         index
       )
@@ -238,7 +237,7 @@ function buildQuestNotebookCells(
   return cells
 }
 
-function buildContractNotebookCells(contract: DungeonContract, contractIndex: number): object[] {
+function buildContractNotebookCells(contract: GuildContract, contractIndex: number): object[] {
   const starterQueryBlock = contract.starterQueries
     .map(
       starterQuery =>
@@ -340,7 +339,7 @@ export function buildNotebook(quest: Quest, queries: QueryEntry[]): object {
 export function buildMasterNotebook(
   kaziQuests: Quest[],
   azmQuests: Quest[],
-  contracts: DungeonContract[]
+  contracts: GuildContract[]
 ): object {
   const cells: object[] = [
     markdownCell([
@@ -352,9 +351,9 @@ export function buildMasterNotebook(
       '',
       `- Kazi individual mysteries: ${kaziQuests.length}`,
       `- Azm individual mysteries: ${azmQuests.length}`,
-      `- Dungeon contract sessions: ${contracts.length}`,
+      `- Guild contract sessions: ${contracts.length}`,
       '',
-      'Kazi and Azm are presented as the two individual student tracks, while Dungeon Contracts capture the shared navigator/driver sessions.',
+      'Kazi and Azm are presented as the two individual student tracks, while Guild Contracts capture the shared navigator/driver sessions.',
     ]),
     markdownCell([
       '## Project Overview',
@@ -407,7 +406,7 @@ export function buildMasterNotebook(
 
   cells.push(
     markdownCell([
-      '## Dungeon Contracts - Paired Real-World Problem-Solving',
+      '## Guild Contracts - Paired Real-World Problem-Solving',
       '',
       'These 10 sessions capture the navigator/driver collaboration work required for the paired portion of the project.',
     ])

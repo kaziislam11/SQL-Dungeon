@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { CORE_SQLNOIR_QUESTS, SECRET_QUESTS } from '@/lib/quests'
-import { DUNGEON_CONTRACTS } from '@/lib/data/dungeon-contracts'
+import { GUILD_CONTRACTS } from '@/lib/data/guild-contracts'
 
 const HERO_ORBITS = [
   {
@@ -46,7 +46,7 @@ const HERO_ORBITS = [
 
 export default function HomePage() {
   const previewQuests = CORE_SQLNOIR_QUESTS.slice(0, 6)
-  const contractCount = DUNGEON_CONTRACTS.length
+  const contractCount = GUILD_CONTRACTS.length
 
   return (
     <main className="min-h-screen bg-abyss">
@@ -90,7 +90,7 @@ export default function HomePage() {
             className="mt-2 block font-cinzel text-rune text-shadow-rune"
             style={{ fontSize: '0.34em', letterSpacing: '0.28em' }}
           >
-            SQLNOIR MYSTERIES AND DUNGEON CONTRACTS
+            SQLNOIR MYSTERIES AND GUILD CONTRACTS
           </span>
         </h1>
 
@@ -100,7 +100,7 @@ export default function HomePage() {
 
         <p className="relative z-10 mx-auto mb-12 max-w-3xl animate-rise font-crimson text-lg italic leading-loose text-mist opacity-0 [animation-delay:1s]">
           A gamified T-SQL project for junior and senior CS majors. Solve ten multi-part SQLNOIR mysteries, document your
-          work in notebook form, then switch into ten paired Dungeon Contracts that simulate business stakeholder and
+          work in notebook form, then switch into ten paired Guild Contracts that simulate business stakeholder and
           programmer-analyst collaboration.
         </p>
 
@@ -108,7 +108,7 @@ export default function HomePage() {
           {[
             [String(CORE_SQLNOIR_QUESTS.length), 'Core Mysteries', 'independent SQLNOIR cases'],
             ['4', 'Sections Each', 'one final integrated query'],
-            [String(contractCount), 'Dungeon Contracts', '10 paired propositions'],
+            [String(contractCount), 'Guild Contracts', '10 paired propositions'],
             [String(SECRET_QUESTS.length), 'Hidden Bonus Quests', 'scroll-unlocked extras'],
           ].map(([value, label, detail]) => (
             <div key={label} className="rounded-sm border border-rune/15 bg-deep/80 px-6 py-5">
@@ -225,10 +225,10 @@ export default function HomePage() {
       <section className="border-b border-rune/10 bg-deep py-24">
         <div className="mx-auto max-w-6xl px-8">
           <p className="mb-2 flex items-center gap-3 font-cinzel text-xs uppercase tracking-[0.35em] text-rune-dim before:text-gold before:content-['*']">
-            Dungeon Contracts <span className="h-px flex-1 bg-rune/15" />
+            Guild Contracts <span className="h-px flex-1 bg-rune/15" />
           </p>
           <h2 className="font-cinzel text-4xl font-bold text-parchment text-shadow-rune">
-            Ten paired dungeon contracts
+            Ten paired guild contracts
             <span className="mt-1 block font-cinzel text-base font-normal tracking-[0.15em] text-mist">
               paired real-world SQL propositions with role rotation, notebook deliverables, and business recommendations
             </span>

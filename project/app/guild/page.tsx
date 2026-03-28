@@ -2,11 +2,11 @@ import Link from 'next/link'
 import {
   CONTRACT_EVALUATION_CRITERIA,
   CONTRACT_PROCESS_STEPS,
-  DUNGEON_CONTRACTS,
-  type DungeonContract,
-} from '@/lib/data/dungeon-contracts'
+  GUILD_CONTRACTS,
+  type GuildContract,
+} from '@/lib/data/guild-contracts'
 
-function ContractCard({ contract }: { contract: DungeonContract }) {
+function ContractCard({ contract }: { contract: GuildContract }) {
   return (
     <article className="rounded-sm border border-rune/15 bg-stone transition-colors hover:border-rune/30">
       <div className="flex items-start justify-between gap-4 border-b border-rune/10 px-6 py-4">
@@ -105,7 +105,7 @@ export default function GuildPage() {
             &larr; Back to Dungeon
           </Link>
           <h1 className="font-cinzel text-3xl font-black tracking-wider text-gold text-shadow-gold">
-            Dungeon Contracts
+            Guild Contracts
           </h1>
           <p className="mt-2 font-crimson text-lg italic text-mist">
             Ten paired real-world SQL propositions built for role rotation, notebook work, and business-facing recommendations.
@@ -166,11 +166,11 @@ export default function GuildPage() {
 
       <div className="mx-auto max-w-6xl px-6 py-8">
         <div className="font-cinzel text-[0.6rem] uppercase tracking-[0.25em] text-rune-dim">
-          Paired problem-solving ladder - {DUNGEON_CONTRACTS.length} total propositions
+          Paired problem-solving ladder - {GUILD_CONTRACTS.length} total propositions
         </div>
 
         <div className="mt-8 flex flex-col gap-6">
-          {DUNGEON_CONTRACTS.map(contract => (
+          {GUILD_CONTRACTS.map(contract => (
             <ContractCard key={contract.id} contract={contract} />
           ))}
         </div>
