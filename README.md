@@ -34,19 +34,19 @@ A parallel campaign exploring diverse datasets and edge-case scenarios.
 The **Guild Contracts** are 10 high-level "Proposition Questions" that simulate real-world software development and consulting.
 
 * **Format:** Paired programming (Driver/Navigator roles).
-* **Objective:** Complete 10 dungeon-themed operations, such as identifying Mimickers in the loot logs, forecasting health potion demand before a raid, and analyzing party survival rates.
+* **Objective:** Complete 20+ dungeon-themed operations, such as identifying Mimickers in the loot logs, forecasting health potion demand before a raid, and analyzing party survival rates.
 * **Deliverable:** A collaborative SQL Notebook documenting the business requirement, the technical solution, and the final insights.
 
 ---
 
 ## 🛠️ Technical Arsenal
 
-* **Frontend:** Next.js (for the interactive UI and leaderboard)
-* **Backend:** Node.js 
-* **Database:** SQL Server (T-SQL) & Supabase (for XP/User tracking)
-* **Tools:** Azure Data Studio / VS Code Notebooks
-* **Deployment:** Render / Vercel
-
+* **Frontend:** React.js, tailwind CSS, (for the interactive UI and leaderboard)
+* **Backend:** Next.js, Node.js 
+* **Database:** Supabase (for XP/User tracking/custom questions)
+* **Tools:** VS Code Notebooks
+* **Deployment:** Vercel
+* **Authentication** Supabase Auth
 ---
 
 ## 🚀 Installation & Setup
